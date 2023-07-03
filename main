@@ -1,0 +1,114 @@
+--soru 1. çıkış 2006 olan rental duration 3 7 ve arasında olan filmelerin sayısı 
+-- kategori_ismi, language, tolma film adedi ile birlikte
+
+select c.name as category, l.name as language, count(f.film_id)  from film f
+left join film_category fc
+using(film_id)
+left join category c
+using(category_id)
+left join language l
+using(language_id)
+where f.release_year=2006 and rental_duration between 3 and 7
+group by c.name, l.name
+
+
+--soru2:hangi store da hangi filmeler kaç. adet stokta var 
+-- store_id, film_adi, inventorydeki adedi
+
+select i.store_id, f.title, count(i.film_id) from film f
+left join inventory i
+using(film_id)
+group by i.store_id,f.title
+
+
+--soru 3:
+--film kategorisi animayosn olan  ve ülkeleri 
+--Anguilla
+--Argentina
+--Armenia
+--Australia
+--Austria
+--Azerbaijan
+--Bahrain
+--Bangladesh
+--Belarus
+--Bolivia
+--Brazil
+--Brunei
+--Bulgaria
+--Cambodia
+--Cameroon
+--Canada
+--bu  ülkerler olan müşteriler kimdir?
+
+select cus.first_name from film 
+left join film_category fc
+using(film_id)
+left join category c
+using(category_id)
+left join inventory i
+using(film_id)
+left join store s
+using(store_id)
+left join address a
+using(address_id)
+left join city ci
+using(city_id)
+left join country cou
+using(country_id)
+left join customer cus
+using(store_id)
+where c.name= 'Animation' and cou.country in ('Anguilla',
+'Argentina',
+'Armenia',
+'Australia',
+'Austria',
+'Azerbaijan',
+'Bahrain',
+'Bangladesh',
+'Belarus',
+'Bolivia',
+'Brazil',
+'Brunei',
+'Bulgaria',
+'Cambodia',
+'Cameroon',
+'Canada')
+group by cus.first_name
+
+
+--Soru 4: 
+--şu an aktif olan müşterilerin kiraladıkların filmlerin isimleri ve  adetleri
+
+select f.title, count(f.title) from film f
+left join film_category fc
+using(film_id)
+left join category c
+using(category_id)
+left join inventory i
+using(film_id)
+left join store s
+using(store_id)
+left join customer cus
+using(store_id)
+where active=1
+group by f.title
+
+--Soru5:
+--Animasyon ve Childer kategorilerinde stafflar toplam kaç film kiralamış ve toplam ne kadarlık kiralamış.
+
+select s.first_name, count(s.first_name ) as sales_num, sum(p.amount) as total_amount from payment p
+left join rental r
+using(staff_id)
+left join staff s
+using(staff_id)
+left join inventory i
+using(inventory_id)
+left join film f
+using(film_id)
+left join film_category fc
+using(film_id)
+left join category c
+using(category_id) 
+where c.name in ('Animation', 'Children')
+group by s.first_name 
